@@ -4,6 +4,8 @@ const bodyParser = require("body-parser");
 
 const passport = require("passport");
 const users = require("./routes/api/users");
+const winston = require("./config/winston");
+const morgan = require("morgan");
 const app = express();
 
 app.use(
@@ -11,6 +13,9 @@ app.use(
     extended: false
   })
 );
+
+
+app.use(morgan('combined', { stream: winston.stream }));
 
 
 app.use(bodyParser.json());
@@ -22,8 +27,8 @@ mongoose
     db,
     { useNewUrlParser: true }
   )
-  .then(() => console.log("MongoDB is connected !!!!!"))
-  .catch(err => console.log(err));
+  .then(() => winston.info("MongoDB is Successfully connected!"))
+  .catch(err => winston.err(err));
 
   app.use(passport.initialize());
   require("./config/passport")(passport);
